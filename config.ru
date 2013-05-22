@@ -5,6 +5,12 @@ require "haml"
 
 class Avery
 
+  def initialize
+    @response = ""
+  end
+  def get(template, locals)
+    @response = haml(template, locals)
+  end
 	def haml(template_name, locals)
 		template = File.open("views/#{template_name}.haml").read
 		engine = Haml::Engine.new(template)
@@ -12,11 +18,14 @@ class Avery
 	end
 
 	def call(env)
-
-		poem = Haiku.new.random
-		out = haml("index", :poem => poem)
-		["200", {"Content-Type" => "text/html"}, out]
+		["200", {"Content-Type" => "text/html"}, @response]
 	end
 end
 
-run Avery.new
+class HaikuApp < Avery
+  def initialize
+    get("index", :poem => Haiku.new.random)
+  end
+end
+
+run HaikuApp.new
