@@ -37,6 +37,21 @@ class HaikuFilter
   end
 end
 
+class Massive
+  def initialize(app = nil)
+    @app = app
+  end
+
+  def call(env)
+    response = ""
+    if (@app)
+      response = @app.call(env)[2]
+    end
+    response= "<div style='font-size:5.0em'>#{response}</div>"
+    ["200", {"Content-Type" => "text/html"}, response]
+  end
+end
+
 class MyApp < Avery
     def initialize
       get("index", :poem => "Hello World")
@@ -44,4 +59,5 @@ class MyApp < Avery
 end
 
 use HaikuFilter
+use Massive
 run MyApp.new
