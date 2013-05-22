@@ -1,3 +1,6 @@
+# https://github.com/tekpub/rack
+# touch /webapps/rack_example/tmp/restart.txt
+
 class EnvironmentOutput
 
   def initialize(app = nil)
