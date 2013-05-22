@@ -1,6 +1,8 @@
 # touch /webapps/rack_example/tmp/restart.txt
 
 require File.dirname(__FILE__) + "/haiku"
+require File.dirname(__FILE__) + "/quotes"
+require File.dirname(__FILE__) + "/environment_out"
 require "haml"
 
 class Avery
@@ -37,6 +39,21 @@ class HaikuFilter
   end
 end
 
+class QuoteFilter
+  def initialize(app = nil)
+    @app = app
+  end
+
+  def call(env)
+    response = ""
+    if (@app)
+      response = @app.call(env)[2]
+    end
+    response+= "<p>#{Quotes.new.random}</p>"
+    ["200", {"Content-Type" => "text/html"}, response]
+  end
+end
+
 class Massive
   def initialize(app = nil)
     @app = app
@@ -60,4 +77,6 @@ end
 
 use HaikuFilter
 use Massive
+use QuoteFilter
+#use EnvironmentOut
 run MyApp.new
