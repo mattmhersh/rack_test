@@ -22,10 +22,26 @@ class Avery
 	end
 end
 
-class HaikuApp < Avery
-  def initialize
-    get("index", :poem => Haiku.new.random)
+class HaikuFilter
+  def initialize(app = nil)
+    @app = app
+  end
+
+  def call(env)
+    response = ""
+    if (@app)
+      response = @app.call(env)[2]
+    end
+    response+= "<p>#{Haiku.new.random}</p>"
+    ["200", {"Content-Type" => "text/html"}, response]
   end
 end
 
-run HaikuApp.new
+class MyApp < Avery
+    def initialize
+      get("index", :poem => "Hello World")
+    end
+end
+
+use HaikuFilter
+run MyApp.new
